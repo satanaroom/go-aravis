@@ -145,6 +145,7 @@ func NewCamera(name string) (Camera, error) {
 	var c Camera
 	var gerror *C.GError
 	var err error
+	C.free()
 
 	cs := C.CString(name)
 	defer C.free(unsafe.Pointer(cs))
@@ -398,7 +399,6 @@ func (c *Camera) GetBinning() (int, int, error) {
 func (c *Camera) SetPixelFormat(format ArvPixelFormat) error {
 	var gerror *C.GError
 	var err error
-
 	C.arv_camera_set_pixel_format(c.camera, format, &gerror)
 	if unsafe.Pointer(gerror) != nil {
 		err = errorFromGError(gerror)
@@ -406,7 +406,7 @@ func (c *Camera) SetPixelFormat(format ArvPixelFormat) error {
 	return err
 }
 
-func (c *Camera) GetPixelFormat() ArvPixelFormat {
+func (c *Camera) GetPixelFormat() (ArvPixelFormat, error) {
 	var gerror *C.GError
 	var err error
 	format := C.arv_camera_get_pixel_format(c.camera, &gerror)
